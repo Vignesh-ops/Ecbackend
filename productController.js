@@ -1,6 +1,6 @@
 const Product = require('../models/Product');
 const Category = require('../models/Category');
-const { sendSuccess, sendError, sendNotFound, sendCreated } = require('../utils/apiResponse');
+const { sendSuccess, sendError, sendNotFound, sendCreated } = require('./utils/apiResponse');
 
 // @desc    Get all products with filtering, sorting and pagination
 // @route   GET /api/products

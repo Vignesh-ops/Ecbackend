@@ -1,6 +1,6 @@
-const User = require('../models/User');
-const { generateToken } = require('../utils/generateToken');
-const { sendSuccess, sendError, sendBadRequest, sendUnauthorized } = require('../utils/apiResponse');
+const User = require('./User');
+const { generateToken } = require('./utils/generateToken');
+const { sendSuccess, sendError, sendBadRequest, sendUnauthorized } = require('./utils/apiResponse');
 
 // @desc    Register new user
 // @route   POST /api/auth/register
