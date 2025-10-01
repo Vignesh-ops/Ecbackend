@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>E-commerce Backend API Documentation</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
+    h1, h2, h3 { color: #2c3e50; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    code { font-family: Consolas, monospace; }
+    section { margin-bottom: 40px; }
+    nav { margin-bottom: 20px; padding: 10px; background: #ecf0f1; border-radius: 4px; }
+    nav a { margin-right: 15px; text-decoration: none; color: #2980b9; }
+    nav a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <h1>E-commerce Backend API Documentation</h1>
+  
+  <nav>
+    <a href="#overview">Overview</a>
+    <a href="#setup">Setup</a>
+    <a href="#env">Environment Variables</a>
+    <a href="#auth">Authentication</a>
+    <a href="#products">Products</a>
+    <a href="#orders">Orders</a>
+    <a href="#users">Users</a>
+    <a href="#categories">Categories</a>
+    <a href="#errors">Error Handling</a>
+  </nav>
+
+  <section id="overview">
+    <h2>Project Overview</h2>
+    <p>This backend API supports features typical for an e-commerce platform:</p>
+    <ul>
+      <li>User registration and authentication (JWT-based)</li>
+      <li>Product catalog management with categories, reviews, and inventory</li>
+      <li>Order processing and order status tracking</li>
+      <li>User role management (user/admin)</li>
+      <li>Cart management</li>
+      <li>Secure API adhering to RESTful design</li>
+      <li>Proper input validation and centralized error handling</li>
+    </ul>
+  </section>
+
+  <section id="setup">
+    <h2>Setup</h2>
+    <p>Clone the repo and install dependencies:</p>
+    <pre><code>git clone &lt;repository-url&gt;
+cd &lt;project-folder&gt;
+npm install
+</code></pre>
+  </section>
+
+  <section id="env">
+    <h2>Environment Variables</h2>
+    <p>Create a <code>.env</code> file in the root directory with these variables:</p>
+    <pre><code>MONGODB_URI=&lt;Your MongoDB connection string&gt;
+JWT_SECRET=&lt;Your JWT secret key&gt;
+FRONTEND_URL=http://localhost:3000
+PORT=5000
+NODE_ENV=development</code></pre>
+  </section>
+
+  <section id="auth">
+    <h2>Authentication API</h2>
+
+    <h3>Register User</h3>
+    <strong>POST /api/auth/register</strong>
+    <p>Register a new user.</p>
+    <p><strong>Payload:</strong></p>
+    <pre><code>{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "Password123"
+}</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "User registered successfully",
+  "data": {
+    "_id": "userID",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "user",
+    "token": "jwt-token"
+  }
+}</code></pre>
+
+    <h3>Login User</h3>
+    <strong>POST /api/auth/login</strong>
+    <p>Authenticate user and provide JWT token.</p>
+    <p><strong>Payload:</strong></p>
+    <pre><code>{
+  "email": "john@example.com",
+  "password": "Password123"
+}</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "_id": "userID",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "user",
+    "token": "jwt-token"
+  }
+}</code></pre>
+
+    <h3>Logout User</h3>
+    <strong>POST /api/auth/logout</strong>
+    <p>Logout user and clear authentication token.</p>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "Logged out successfully"
+}</code></pre>
+
+    <h3>Get User Profile</h3>
+    <strong>GET /api/auth/profile</strong>
+    <p><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;</p>
+    <p>Get authenticated user profile.</p>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "Profile retrieved successfully",
+  "data": {
+    "_id": "userID",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "user",
+    "phone": "1234567890",
+    "address": {
+      "street": "123 Street",
+      "city": "City",
+      "state": "State",
+      "zipCode": "12345",
+      "country": "Country"
+    }
+  }
+}</code></pre>
+
+    <h3>Update User Profile</h3>
+    <strong>PUT /api/auth/profile</strong>
+    <p><strong>Headers:</strong> Authorization: Bearer &lt;token&gt;</p>
+    <p>Update authenticated user profile fields.</p>
+    <p><strong>Payload (any of):</strong></p>
+    <pre><code>{
+  "name": "John Updated",
+  "phone": "0987654321",
+  "address": {
+    "city": "New City"
+  }
+}</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "Profile updated successfully",
+  "data": {
+    "_id": "userID",
+    "name": "John Updated",
+    "phone": "0987654321",
+    "address": {
+      "city": "New City"
+    }
+  }
+}</code></pre>
+  </section>
+
+  <section id="products">
+    <h2>Products API</h2>
+
+    <h3>Get All Products</h3>
+    <strong>GET /api/products</strong>
+    <p>Fetch paginated products with optional filters.</p>
+    <p><strong>Query Parameters:</strong></p>
+    <ul>
+      <li><strong>page</strong> (int): page number (default 1)</li>
+      <li><strong>limit</strong> (int): items per page (default 12)</li>
+      <li><strong>category</strong> (string): filter by category id</li>
+      <li><strong>search</strong> (string): text search term</li>
+      <li><strong>sort</strong> (string): sort by field, prefix with - for desc, e.g. -price</li>
+    </ul>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "Products retrieved successfully",
+  "data": [ /* array of product objects */ ],
+  "meta": {
+    "pagination": {
+      "current": 1,
+      "pages": 10,
+      "total": 120,
+      "hasNext": true,
+      "hasPrev": false
+    }
+  }
+}</code></pre>
+
+    <h3>Get Product Details</h3>
+    <strong>GET /api/products/:id</strong>
+    <p>Fetch details of a single product by ID.</p>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "Product retrieved successfully",
+  "data": { /* product object */ }
+}</code></pre>
+
+    <h3>Create Product (Admin)</h3>
+    <strong>POST /api/products</strong>
+    <p><strong>Headers:</strong> Authorization: Bearer &lt;admin-token&gt;</p>
+    <p><strong>Payload:</strong></p>
+    <pre><code>{
+  "name": "Smartwatch",
+  "description": "Latest model",
+  "price": 199.99,
+  "category": "categoryId",
+  "brand": "BrandName",
+  "stock": 100,
+  "images": [{"url":"image-url","alt":"Smartwatch"}],
+  "featured": false
+}</code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>{
+  "success": true,
+  "message": "Product created successfully",
+  "data": { /* new product object */ }
+}</code></pre>
+  </section>
+
+  <section id="orders">
+    <h2>Orders API</h2>
+    <p>(Endpoints details to be added similar to above as per your project specs)</p>
+  </section>
+
+  <section id="users">
+    <h2>Users API</h2>
+    <p>(Endpoints details to be added similar to above as per your project specs)</p>
+  </section>
+
+  <section id="categories">
+    <h2>Categories API</h2>
+    <p>(Endpoints details to be added similar to above as per your project specs)</p>
+  </section>
+
+  <section id="errors">
+    <h2>Error Handling</h2>
+    <p>All errors are handled by centralized middleware returning JSON with `success: false` and an error message.</p>
+    <p>Validation errors include an array of specific messages per field.</p>
+  </section>
+
+</body>
+</html>
