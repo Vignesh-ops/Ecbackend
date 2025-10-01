@@ -6,11 +6,13 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 // Import routes
+const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const userRoutes = require('./routes/userRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+
 
 // Import middleware
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
@@ -63,7 +65,9 @@ const connectToDatabase = async () => {
     throw err;
   }
 };
-
+app.get('/readme.htm', (req, res) => {
+  res.sendFile(path.join(__dirname, 'readme.htm'));
+});
 // Health check route
 app.get('/', async (req, res) => {
   try {
